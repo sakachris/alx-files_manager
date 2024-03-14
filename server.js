@@ -1,12 +1,14 @@
 const express = require('express');
-const startServer = require('./libs/boot');
-const injectRoutes = require('./routes');
-const injectMiddlewares = require('./libs/middlewares');
+const bodyParser = require('body-parser');
+const routes = require('./routes');
 
-const server = express();
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-injectMiddlewares(server);
-injectRoutes(server);
-startServer(server);
+app.use(bodyParser.json());
 
-module.exports = server;
+app.use('/', routes);
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
