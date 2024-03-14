@@ -2,14 +2,11 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
 
-// Assuming you have a User model imported for retrieving users
 const User = require('../models/User');
-// Assuming you have a File model imported for storing files
 const File = require('../models/File');
 
 async function postUpload(req, res) {
     try {
-        // Retrieve user based on token
         const user = await User.findByToken(req.token);
 
         if (!user) {
@@ -18,7 +15,6 @@ async function postUpload(req, res) {
 
         const { name, type, parentId = 0, isPublic = false, data } = req.body;
 
-        // Validation
         if (!name) {
             return res.status(400).json({ error: 'Missing name' });
         }
@@ -43,7 +39,6 @@ async function postUpload(req, res) {
             }
         }
 
-        // Create file in database
         const newFile = new File({
             userId: user._id,
             name,
@@ -56,7 +51,6 @@ async function postUpload(req, res) {
             await newFile.save();
             return res.status(201).json(newFile);
         } else {
-            // Storing file locally
             const folderPath = process.env.FOLDER_PATH || '/tmp/files_manager';
             const filePath = path.join(folderPath, uuidv4());
             const fileContent = Buffer.from(data, 'base64');
